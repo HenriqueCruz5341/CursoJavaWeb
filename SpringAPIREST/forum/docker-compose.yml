@@ -1,0 +1,14 @@
+version: '3.1'
+
+services:
+  forum-spring:
+    build: .
+    container_name: "forum-spring"
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:alura-forum
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=
+      - FORUM_JWT_SECRET=forum-jwt-secret
