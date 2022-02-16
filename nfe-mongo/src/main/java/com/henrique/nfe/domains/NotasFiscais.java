@@ -1,8 +1,5 @@
 package com.henrique.nfe.domains;
 
-import java.util.List;
-import java.util.function.Function;
-
 import com.henrique.nfe.entities.NotaFiscal;
 import com.henrique.nfe.models.envelopes.ResponseEnvelopePage;
 import com.henrique.nfe.models.envelopes.ResponseEnvelopeSingleObject;
@@ -10,7 +7,8 @@ import com.henrique.nfe.models.notasfiscais.NotaFiscalInputDto;
 import com.henrique.nfe.models.notasfiscais.NotaFiscalViewDto;
 
 public interface NotasFiscais {
-    public ResponseEnvelopePage<NotaFiscal, NotaFiscalViewDto> get(Integer pageIndex, Integer pageSize);
+    public ResponseEnvelopePage<NotaFiscal, NotaFiscalViewDto> get(Integer pageIndex, Integer pageSize,
+            String prestador, String tomador, Double valorMinimo, String servicos, String dataEmissaoFim);
 
     public ResponseEnvelopeSingleObject<NotaFiscal, NotaFiscalViewDto> getById(String id);
 

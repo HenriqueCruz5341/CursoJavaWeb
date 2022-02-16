@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+
 import com.henrique.nfe.consts.MessagesConsts;
 import com.henrique.nfe.domains.Empresas;
 import com.henrique.nfe.entities.Empresa;
@@ -17,20 +19,27 @@ import com.henrique.nfe.models.envelopes.ResponseEnvelopeSingleObject;
 import com.henrique.nfe.repositories.EmpresasRepository;
 import com.henrique.nfe.repositories.NotasFiscaisRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmpresasService implements Empresas {
 
-    @Autowired
     private EmpresasRepository empresasRepository;
-
-    @Autowired
     private NotasFiscaisRepository notasFiscaisRepository;
+    private MongoTemplate mongoTemplate;
+
+    public EmpresasService(NotasFiscaisRepository notasFiscaisRepository,
+            EmpresasRepository empresasRepository, MongoTemplate mongoTemplate) {
+        this.notasFiscaisRepository = notasFiscaisRepository;
+        this.empresasRepository = empresasRepository;
+        this.mongoTemplate = mongoTemplate;
+    }
 
     @Override
     public ResponseEnvelopePage<Empresa, EmpresaViewDto> get(Integer pageIndex, Integer pageSize) {
@@ -77,7 +86,15 @@ public class EmpresasService implements Empresas {
             if (empresaEditDto.getRazaoSocial() != null)
                 empresa.setRazaoSocial(empresaEditDto.getRazaoSocial());
 
-            return ResponseEnvelopeSingleObject.create(empresasRepository.save(empresa), getEmpresaView);
+            final Empresa updatedEmpresa = empresasRepository.save(empresa);
+
+            mongoTemplate.updateMulti(new Query(where("tomador._id").is(id)),
+                    new Update().set("tomador", updatedEmpresa), NotaFiscal.class);
+
+            mongoTemplate.updateMulti(new Query(where("prestador._id").is(id)),
+                    new Update().set("prestador", updatedEmpresa), NotaFiscal.class);
+
+            return ResponseEnvelopeSingleObject.create(updatedEmpresa, getEmpresaView);
         };
 
         final Optional<Empresa> empresaOptional = empresasRepository.findById(id);

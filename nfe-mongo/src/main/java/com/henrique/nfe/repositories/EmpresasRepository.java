@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface EmpresasRepository extends MongoRepository<Empresa, String> {
 
     public Empresa findByCnpj(String cnpj);
+
 }

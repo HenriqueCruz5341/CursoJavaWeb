@@ -1,7 +1,10 @@
 package com.henrique.nfe.controllers;
 
+import java.util.List;
+
 import com.henrique.nfe.domains.NotasFiscais;
 import com.henrique.nfe.entities.NotaFiscal;
+import com.henrique.nfe.entities.Servico;
 import com.henrique.nfe.models.envelopes.ResponseEnvelopePage;
 import com.henrique.nfe.models.envelopes.ResponseEnvelopeSingleObject;
 import com.henrique.nfe.models.notasfiscais.NotaFiscalInputDto;
@@ -31,8 +34,14 @@ public class NotasFiscaisController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseEnvelopePage<NotaFiscal, NotaFiscalViewDto>> get(
             @RequestParam(defaultValue = "0") Integer pageIndex,
-            @RequestParam(defaultValue = "5") Integer pageSize) {
-        return notasFiscais.get(pageIndex, pageSize).toResponse();
+            @RequestParam(defaultValue = "5") Integer pageSize,
+            @RequestParam(required = false) String prestador,
+            @RequestParam(required = false) String tomador,
+            @RequestParam(required = false) Double valorMinimo,
+            @RequestParam(required = false) String servicos,
+            @RequestParam(required = false) String dataEmissaoFim) {
+        return notasFiscais.get(pageIndex, pageSize, prestador, tomador, valorMinimo, servicos, dataEmissaoFim)
+                .toResponse();
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
